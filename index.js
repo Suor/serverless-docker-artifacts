@@ -13,6 +13,9 @@ class ServerlessDockerArtifacts {
   createArtifacts() {
     this.artifacts.forEach((art) => {
       this.serverless.cli.log(`Building ${art.path}/${art.dockerfile} image with ${art.copy}...`);
+      if (fse.existsSync(art.copy))
+        throw Error(`The target path "${art.copy}" is occupied. ` +
+                    `Run "sls dockart clean" to remove all artifacts.`);
 
       const image = 'sls-dockart-' + art.copy.replace(/\W/g, '').toLowerCase();
       run('docker', ['build', '-f', art.dockerfile, '-t', image, art.path], {'showOutput': true});
