@@ -10,30 +10,34 @@ BbPromise.promisifyAll(fse);
 
 
 class ServerlessDockerArtifacts {
+  static createArtifact(serverless, art) {
+    serverless.cli.log(`Building ${art.path}/${art.dockerfile} image with ${art.copy}...`);
+    if (fse.existsSync(art.copy))
+      throw Error(`The target path "${art.copy}" is occupied. ` +
+                  `Run "sls dockart clean" to remove all artifacts.`);
+
+    const image = 'sls-dockart-' + art.copy.replace(/\W/g, '').toLowerCase();
+    run('docker', ['build', '-f', art.dockerfile, '-t', image, art.path], {'showOutput': true});
+
+    const container = run('docker', ['create', image, '-']).stdout.trim();
+    run('docker', ['cp', `${container}:/var/task/${art.copy}`, art.copy])
+  }
+
+  static cleanDocker() {
+    const images = lines(run('docker', ['images', '-q', 'sls-dockart-*']));
+    const filters = _.flatMap(images, image => ['-f', `ancestor=${image}`])
+    const containers = lines(run('docker', ['ps', '-aq'].concat(filters)));
+
+    if (containers.length) run('docker', ['rm'].concat(containers));
+    if (images.length) run('docker', ['rmi'].concat(images));
+  }
+
   createArtifacts() {
-    this.artifacts.forEach((art) => {
-      this.serverless.cli.log(`Building ${art.path}/${art.dockerfile} image with ${art.copy}...`);
-      if (fse.existsSync(art.copy))
-        throw Error(`The target path "${art.copy}" is occupied. ` +
-                    `Run "sls dockart clean" to remove all artifacts.`);
-
-      const image = 'sls-dockart-' + art.copy.replace(/\W/g, '').toLowerCase();
-      run('docker', ['build', '-f', art.dockerfile, '-t', image, art.path], {'showOutput': true});
-
-      const container = run('docker', ['create', image, '-']).stdout.trim();
-      run('docker', ['cp', `${container}:/var/task/${art.copy}`, art.copy])
-    })
+    this.artifacts.forEach((art) => this.constructor.createArtifact(this.serverless, art));
   }
 
   cleanup() {
-    if (this.options.full) {
-      const images = lines(run('docker', ['images', '-q', 'sls-dockart-*']));
-      const filters = _.flatMap(images, image => ['-f', `ancestor=${image}`])
-      const containers = lines(run('docker', ['ps', '-aq'].concat(filters)));
-
-      if (containers.length) run('docker', ['rm'].concat(containers));
-      if (images.length) run('docker', ['rmi'].concat(images));
-    }
+    if (this.options.full) this.constructor.cleanDocker();
 
     return BbPromise.all(this.artifacts.map(art =>
         fse.removeAsync(art.copy)
