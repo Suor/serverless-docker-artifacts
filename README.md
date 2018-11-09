@@ -41,7 +41,7 @@ sls dockart create                # Build all artifacts
 SLS_DEBUG="*" sls dockart create  # Same, showing all the process
 
 sls dockart clean        # Delete artifacts
-sls dockart clean --full # Delete artifacts, docker images and containers
+sls dockart clean-docker # Delete docker images and containers
 ```
 
 Note that if you are debugging a dockerfile you probaly have lots of dangling images and their containers. These are not removed by `sls dockart clean --full`, you need to handle it yourself.

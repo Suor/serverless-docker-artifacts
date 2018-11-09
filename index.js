@@ -50,8 +50,6 @@ class ServerlessDockerArtifacts {
   }
 
   clean() {
-    if (this.options.full) this.constructor.cleanDocker();
-
     return BbPromise.all(this.artifacts.map(art =>
         fse.removeAsync(art.copy)
     ));
@@ -76,11 +74,10 @@ class ServerlessDockerArtifacts {
           clean: {
             usage: "Remove artifacts.",
             lifecycleEvents: ["clean"],
-            options: {
-              full: {
-                usage: "Remove docker containers and images."
-              },
-            }
+          },
+          'clean-docker': {
+            usage: "Remove artifacts.",
+            lifecycleEvents: ["clean-docker"],
           }
         }
       }
@@ -92,6 +89,7 @@ class ServerlessDockerArtifacts {
 
       "dockart:create:create": () => this.create(),
       "dockart:clean:clean": () => this.clean(),
+      "dockart:clean-docker:clean-docker": () => this.constructor.cleanDocker(),
 
       // TODO: support functions?
       // "before:deploy:function:packageFunction": () =>
