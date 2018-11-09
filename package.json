@@ -37,12 +37,12 @@
     "amazon web services",
     "serverless.com"
   ],
-  "license": "BSD",
+  "license": "BSD-2-Clause",
   "main": "index.js",
   "name": "serverless-docker-artifacts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Suor/serverless-docker-artifacts.git"
   },
-  "version": "0.1"
+  "version": "0.1.0"
 }
