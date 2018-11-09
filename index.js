@@ -9,9 +9,18 @@ const fse = require("fs-extra");
 BbPromise.promisifyAll(fse);
 
 
+function validateArtifact(artifact) {
+  const art = Object.assign({path: '.', dockerfile: 'Dockerfile'}, artifact);
+  return art;
+}
+
+
 class ServerlessDockerArtifacts {
   static createArtifact(serverless, art) {
     serverless.cli.log(`Building ${art.path}/${art.dockerfile} image with ${art.copy}...`);
+  static createArtifact(artifact) {
+    const art = validateArtifact(artifact);
+
     if (fse.existsSync(art.copy))
       throw Error(`The target path "${art.copy}" is occupied. ` +
                   `Run "sls dockart clean" to remove all artifacts.`);
@@ -33,7 +42,10 @@ class ServerlessDockerArtifacts {
   }
 
   createArtifacts() {
-    this.artifacts.forEach((art) => this.constructor.createArtifact(this.serverless, art));
+    this.artifacts.forEach((artifact) => {
+      let art = validateArtifact(artifact);
+      this.constructor.createArtifact(art)
+    });
   }
 
   cleanup() {
