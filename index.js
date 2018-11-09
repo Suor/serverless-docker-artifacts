@@ -16,8 +16,7 @@ function validateArtifact(artifact) {
 
 
 class ServerlessDockerArtifacts {
-  static createArtifact(serverless, art) {
-    serverless.cli.log(`Building ${art.path}/${art.dockerfile} image with ${art.copy}...`);
+  // Public API functions
   static createArtifact(artifact) {
     const art = validateArtifact(artifact);
 
@@ -41,14 +40,16 @@ class ServerlessDockerArtifacts {
     if (images.length) run('docker', ['rmi'].concat(images));
   }
 
-  createArtifacts() {
+  // Private implementation
+  create() {
     this.artifacts.forEach((artifact) => {
       let art = validateArtifact(artifact);
+      this.serverless.cli.log(`Building ${art.path}/${art.dockerfile} image with ${art.copy}...`);
       this.constructor.createArtifact(art)
     });
   }
 
-  cleanup() {
+  clean() {
     if (this.options.full) this.constructor.cleanDocker();
 
     return BbPromise.all(this.artifacts.map(art =>
@@ -86,11 +87,11 @@ class ServerlessDockerArtifacts {
     };
 
     this.hooks = {
-      "before:package:createDeploymentArtifacts": () => this.createArtifacts(),
-      "after:package:createDeploymentArtifacts": () => this.cleanup(),
+      "before:package:createDeploymentArtifacts": () => this.create(),
+      "after:package:createDeploymentArtifacts": () => this.clean(),
 
-      "dockart:create:create": () => this.createArtifacts(),
-      "dockart:clean:clean": () => this.cleanup(),
+      "dockart:create:create": () => this.create(),
+      "dockart:clean:clean": () => this.clean(),
 
       // TODO: support functions?
       // "before:deploy:function:packageFunction": () =>
