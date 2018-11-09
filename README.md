@@ -9,7 +9,7 @@ A Serverless 1.x plugin to build your artifacts within docker container.
 npm install --save serverless-docker-artifacts
 ```
 
-Add the plugin to your `serverless.yml` file and set the WSGI application:
+Add the plugin to your `serverless.yml` file and configure:
 
 ```yaml
 plugins:
@@ -17,9 +17,9 @@ plugins:
 
 custom:
   dockerArtifact:
-    path: '.'
-    dockerfile: Dockerfile-tesseract
-    copy: tesseract-standalone
+    path: '.'                        # Defaults to '.'
+    dockerfile: Dockerfile-tesseract # Defaults to 'Dockerfile'
+    copy: tesseract-standalone       # Not affected by path
 
   # If you have more than one
   dockerArtifacts:
@@ -53,7 +53,7 @@ Note that if you are debugging a dockerfile you probaly have lots of dangling im
 const dockart = require('serverless-docker-artifacts');
 
 // Create an artifact
-dockart.createArtifact(this.serverless, {
+dockart.createArtifact({
     path: 'path/to/',
     dockerfile: 'Dockerfile',
     copy: 'some-dir'
