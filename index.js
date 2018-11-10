@@ -1,7 +1,8 @@
 "use strict";
 
 const child_process = require("child_process");
-// const path = require("path");
+const path = require("path");
+
 const BbPromise = require("bluebird");
 const _ = require("lodash");
 const fse = require("fs-extra");
@@ -27,7 +28,7 @@ class ServerlessDockerArtifacts {
     const image = 'sls-dockart-' + art.copy.replace(/\W/g, '').toLowerCase();
 
     // Build image
-    const buildArgs = ['build', '-f', art.dockerfile, '-t', image];
+    const buildArgs = ['build', '-t', image, '-f', path.resolve(art.path, art.dockerfile)];
     _.forOwn(art.args, (value, key) => buildArgs.push('--build-arg', `${key}=${value}`));
     run('docker', buildArgs.concat([art.path]), {'showOutput': true});
 
