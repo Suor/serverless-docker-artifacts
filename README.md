@@ -19,7 +19,7 @@ custom:
   dockerArtifact:
     path: '.'                        # Defaults to '.'
     dockerfile: Dockerfile-tesseract # Defaults to 'Dockerfile'
-    args:                            # Pass args to build with --build-arg
+    args:                            # Pass args with --build-arg
       TESSERACT_VERSION: 4.0.0
       TESSDATA: "osd eng rus"
     copy: tesseract-standalone       # Not affected by path
@@ -47,7 +47,7 @@ sls dockart clean        # Delete artifacts
 sls dockart clean-docker # Delete docker images and containers
 ```
 
-Note that if you are debugging a dockerfile you probaly have lots of dangling images and their containers. These are not removed by `sls dockart clean --full`, you need to handle it yourself.
+Note that if you are debugging a dockerfile you probaly have lots of dangling images and their containers. These are not removed by `sls dockart clean-docker`, you need to handle it yourself.
 
 
 ## API for your plugins
