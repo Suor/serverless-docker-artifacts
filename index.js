@@ -10,7 +10,7 @@ BbPromise.promisifyAll(fse);
 
 
 function validateArtifact(artifact) {
-  const art = Object.assign({path: '.', dockerfile: 'Dockerfile'}, artifact);
+  const art = Object.assign({path: '.', dockerfile: 'Dockerfile', args: {}}, artifact);
   return art;
 }
 
@@ -25,8 +25,13 @@ class ServerlessDockerArtifacts {
                   `Run "sls dockart clean" to remove all artifacts.`);
 
     const image = 'sls-dockart-' + art.copy.replace(/\W/g, '').toLowerCase();
-    run('docker', ['build', '-f', art.dockerfile, '-t', image, art.path], {'showOutput': true});
 
+    // Build image
+    const buildArgs = ['build', '-f', art.dockerfile, '-t', image];
+    _.forOwn(art.args, (value, key) => buildArgs.push('--build-arg', `${key}=${value}`));
+    run('docker', buildArgs.concat([art.path]), {'showOutput': true});
+
+    // Copy artifact from container
     const container = run('docker', ['create', image, '-']).stdout.trim();
     run('docker', ['cp', `${container}:/var/task/${art.copy}`, art.copy])
   }

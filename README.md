@@ -19,6 +19,9 @@ custom:
   dockerArtifact:
     path: '.'                        # Defaults to '.'
     dockerfile: Dockerfile-tesseract # Defaults to 'Dockerfile'
+    args:                            # Pass args to build with --build-arg
+      TESSERACT_VERSION: 4.0.0
+      TESSDATA: "osd eng rus"
     copy: tesseract-standalone       # Not affected by path
 
   # If you have more than one
@@ -56,7 +59,8 @@ const dockart = require('serverless-docker-artifacts');
 dockart.createArtifact({
     path: 'path/to/',
     dockerfile: 'Dockerfile',
-    copy: 'some-dir'
+    args: {...},
+    copy: 'some-dir',
 })
 
 // Remove containers and images
