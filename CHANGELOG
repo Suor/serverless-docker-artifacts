@@ -1,0 +1,6 @@
+0.1.1
+- Made `dockerfile` realtive to `path`
+- Fixed a few things in README
+
+0.1.0
+- Initial version

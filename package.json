@@ -1,4 +1,6 @@
 {
+  "name": "serverless-docker-artifacts",
+  "version": "0.1.1",
   "author": {
     "name": "Alexander Schepanovski",
     "email": "suor.web@gmail.com"
@@ -39,10 +41,8 @@
   ],
   "license": "BSD-2-Clause",
   "main": "index.js",
-  "name": "serverless-docker-artifacts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Suor/serverless-docker-artifacts.git"
-  },
-  "version": "0.1.0"
+  }
 }
